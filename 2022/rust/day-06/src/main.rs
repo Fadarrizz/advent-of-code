@@ -1,18 +1,12 @@
-// detect first start-of-packet marker
-// start of packet = 4 chars
-// identify first position where most recent four chars are different
-
 use std::fs;
 use std::collections::HashMap;
 
 fn are_different(chars: Vec<char>) -> bool {
-    let len = chars.len();
-
     chars
         .iter()
         .map(|c| (c, true))
         .collect::<HashMap<_, _>>()
-        .len() == len
+        .len() == chars.len()
 }
 
 fn start_of_packet_marker(s: &str, len: usize) -> usize {
@@ -28,19 +22,11 @@ fn start_of_packet_marker(s: &str, len: usize) -> usize {
     max
 }
 
-fn part1(s: &str) -> usize {
-    start_of_packet_marker(&s, 4)
-}
-
-fn part2(s: &str) -> usize {
-    start_of_packet_marker(&s, 14)
-}
-
 fn main() {
     let input = fs::read_to_string("./input.txt").unwrap();
 
-    println!("part 1: {}", part1(&input.trim()));
-    println!("part 2: {}", part2(&input.trim()));
+    println!("part 1: {}", start_of_packet_marker(&input.trim(), 4));
+    println!("part 2: {}", start_of_packet_marker(&input.trim(), 14));
 }
 
 #[test]
