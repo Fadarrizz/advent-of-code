@@ -1,5 +1,5 @@
-use std::collections::HashSet;
 use std::cmp;
+use std::collections::HashSet;
 
 #[derive(Clone, Debug)]
 pub enum Direction {
@@ -64,8 +64,8 @@ impl Point {
 
     pub fn get_neighbour_towards(&self, other: &Point) -> Point {
         Point {
-            x: self.x + cmp::min(cmp::max(other.x - self.x, -1), 1),
-            y: self.y + cmp::min(cmp::max(other.y - self.y, -1), 1),
+            x: self.x + (other.x - self.x).clamp(-1, 1),
+            y: self.y + (other.y - self.y).clamp(-1, 1),
         }
     }
 }
@@ -87,10 +87,13 @@ impl HashGrid<Point> {
 
 impl Default for HashGrid<Point> {
     fn default() -> Self {
-        Self {points: HashSet::new()}
+        Self {
+            points: HashSet::new(),
+        }
     }
 }
 
+#[derive(Debug)]
 pub struct Grid<T> {
     pub width: usize,
     pub height: usize,
@@ -98,16 +101,22 @@ pub struct Grid<T> {
 }
 
 impl<T> Grid<T> {
-    pub fn from_str(input: &str, parse: &dyn Fn(char) -> T) -> Self {
+    pub fn from_str(input: &str, parse: &mut dyn FnMut(char, usize, usize) -> T) -> Self {
         let data: Vec<Vec<T>> = input
             .trim()
             .lines()
-            .map(|line| line.chars().map(parse).collect())
+            .enumerate()
+            .map(|(y, line)| {
+                line.chars()
+                    .enumerate()
+                    .map(|(x, c)| parse(c, x, y))
+                    .collect()
+            })
             .collect();
 
         Grid {
-            width: data[0].len() - 1,
-            height: data.len() - 1,
+            width: data[0].len(),
+            height: data.len(),
             data,
         }
     }
@@ -115,11 +124,11 @@ impl<T> Grid<T> {
     pub fn points(&self) -> Vec<Point> {
         let mut points = vec![];
 
-        for y in 0..=self.height {
-            for x in 0..=self.width {
+        for y in 0..self.height {
+            for x in 0..self.width {
                 points.push(Point {
                     x: x as isize,
-                    y: y as isize
+                    y: y as isize,
                 })
             }
         }
@@ -134,15 +143,30 @@ impl<T> Grid<T> {
     pub fn is_edge(&self, point: &Point) -> bool {
         point.x == 0
             || point.y == 0
-            || point.x as usize == self.width
-            || point.y as usize == self.height
+            || point.x as usize == self.width - 1
+            || point.y as usize == self.height - 1
     }
 
     pub fn is_off(&self, point: &Point) -> bool {
         point.x < 0
             || point.y < 0
-            || point.x as usize > self.width
-            || point.y as usize > self.height
+            || point.x as usize >= self.width
+            || point.y as usize >= self.height
+    }
+
+    pub fn lies_within(&self, point: &Point) -> bool {
+        !self.is_off(point)
+    }
+
+    pub fn id_for_point(&self, point: &Point) -> usize {
+        point.x as usize + self.width * point.y as usize
+    }
+
+    pub fn point_for_id(&self, id: usize) -> Point {
+        Point {
+            x: (id % self.width) as isize,
+            y: (id / self.width) as isize,
+        }
     }
 
     pub fn walk<'a>(&'a self, current: &'a Point, direction: &'a Direction) -> WalkingIterator<T> {
