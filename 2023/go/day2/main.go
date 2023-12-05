@@ -108,7 +108,13 @@ func main() {
 		println(err)
 	}
 
+	part2, err := part2()
+	if err != nil {
+		println(err)
+	}
+
 	println(part1)
+	println(part2)
 }
 
 func part1() (int, error) {
@@ -131,6 +137,29 @@ func part1() (int, error) {
 		if reds <= 12 && blues <= 14 && greens <= 13 {
 			result += game.id
 		}
+	}
+
+	return result, nil
+}
+
+func part2() (int, error) {
+    var games []*Game
+	for _, line := range readLines() {
+        game, err := parseGame(line)
+        if err != nil {
+            return 0, err
+        }
+
+        games = append(games, game)
+	}
+	
+	var result int
+	for _, game := range games {
+		reds := game.highestCubeAmount(Red)
+		blues := game.highestCubeAmount(Blue)
+		greens := game.highestCubeAmount(Green)
+
+		result += (reds * blues * greens)
 	}
 
 	return result, nil
