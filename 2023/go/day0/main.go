@@ -9,12 +9,12 @@ import (
 func main() {
 	part1, err := part1()
 	if err != nil {
-		println(err)
+		log.Fatal(err)
 	}
 
 	part2, err := part2()
 	if err != nil {
-		println(err)
+		log.Fatal(err)
 	}
 
 	println(part1)
