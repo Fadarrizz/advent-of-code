@@ -9,7 +9,7 @@ import (
 	_ "github.com/gookit/goutil/dump"
 )
 
-//go:embed input.txt
+//go:embed example.txt
 var input string
 
 func main() {
