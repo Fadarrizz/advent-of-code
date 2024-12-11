@@ -1,5 +1,49 @@
 package coordinates
 
+type Coordinate struct {
+	X int
+	Y int
+}
+
+func New(row, col int) Coordinate {
+	return Coordinate{col, row}
+}
+
+func Position(c Coordinate, d Direction) Coordinate {
+	a, b := adjustmentsFromDirection(d)
+
+	return Coordinate{c.X + a, c.Y + b}
+}
+
+type Line struct {
+	A Coordinate
+	B Coordinate
+}
+
+func (l Line) Length() Coordinate {
+    dx := l.B.X - l.A.X
+    dy := l.B.Y - l.A.Y
+
+	return Coordinate{dx, dy}
+}
+
+func (l Line) Extend(length Coordinate) Line {
+	a := l.A
+	b := l.B
+
+    c := Coordinate{
+        X: a.X - length.X,
+        Y: a.Y - length.Y,
+    }
+
+    d := Coordinate{
+        X: b.X + length.X,
+        Y: b.Y + length.Y,
+    }
+
+	return Line{c, d}
+}
+
 type Direction int
 
 const (
@@ -36,34 +80,6 @@ func (d Direction) Name() string {
 	}
 }
 
-func AllDirections() []Direction {
-	return []Direction{
-		NORTH,
-		NORTHEAST,
-		EAST,
-		SOUTHEAST,
-		SOUTH,
-		SOUTHWEST,
-		WEST,
-		NORTHWEST,
-	}
-}
-
-type Coordinate struct {
-	X int
-	Y int
-}
-
-func New(row, col int) Coordinate {
-	return Coordinate{col, row}
-}
-
-func Position(c Coordinate, d Direction) Coordinate {
-	a, b := adjustmentsFromDirection(d)
-
-	return Coordinate{c.X + a, c.Y + b}
-}
-
 func adjustmentsFromDirection(d Direction) (int, int) {
 	switch d {
 	case NORTH:
@@ -84,5 +100,18 @@ func adjustmentsFromDirection(d Direction) (int, int) {
 		return -1, -1
 	default:
 		return 0, 0 // should not be possible
+	}
+}
+
+func AllDirections() []Direction {
+	return []Direction{
+		NORTH,
+		NORTHEAST,
+		EAST,
+		SOUTHEAST,
+		SOUTH,
+		SOUTHWEST,
+		WEST,
+		NORTHWEST,
 	}
 }
