@@ -1,8 +1,8 @@
-package matrix
+package grid
 
 import "testing"
 
-func TestMatrixNew(t *testing.T) {
+func TestgridNew(t *testing.T) {
 	m, err := New[rune](1, 1)
 
 	if err != nil {

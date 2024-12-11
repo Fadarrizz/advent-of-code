@@ -2,7 +2,7 @@ package main
 
 import (
 	"advent-of-code/2024/go/coordinates"
-	"advent-of-code/2024/go/matrix"
+	"advent-of-code/2024/go/grid"
 	_ "embed"
 	"errors"
 	"fmt"
@@ -34,11 +34,11 @@ func main() {
 func part1() (int, error) {
 	lines := lines()
 
-	matrix := initMatrix(lines)
+	grid := initgrid(lines)
 
-	startingPosition := matrix.Find('^')
+	startingPosition := grid.Find('^')
 
-	visited, _ := walk(matrix, startingPosition)
+	visited, _ := walk(grid, startingPosition)
 
 	return len(visited), nil
 }
@@ -46,20 +46,20 @@ func part1() (int, error) {
 func part2() (int, error) {
 	lines := lines()
 
-	matrix := initMatrix(lines)
+	grid := initgrid(lines)
 
-	startingPosition := matrix.Find('^')
+	startingPosition := grid.Find('^')
 
-	visited, _ := walk(matrix, startingPosition)
+	visited, _ := walk(grid, startingPosition)
 
 	total := 0
 	for c := range visited {
-		matrix.Set(c, '#')
-		_, err := walk(matrix, startingPosition)
+		grid.Set(c, '#')
+		_, err := walk(grid, startingPosition)
 		if err != nil {
 			total++
 		}
-		matrix.Set(c, '.')
+		grid.Set(c, '.')
 	}
 
 	return total, nil
@@ -69,19 +69,19 @@ func lines() []string {
 	return strings.Split(strings.TrimSpace(input), "\n")
 }
 
-func initMatrix(s []string) matrix.Matrix[rune] {
+func initgrid(s []string) grid.Grid[rune] {
 	height := len(s)
 	width := len(s[0])
 
-	matrix, _ := matrix.New[rune](height, width)
+	grid, _ := grid.New[rune](height, width)
 
 	for i, line := range s {
 		for j, char := range line {
-			matrix.Set(coordinates.New(i, j), char)
+			grid.Set(coordinates.New(i, j), char)
 		}
 	}
 
-	return *matrix
+	return *grid
 }
 
 func turn(d coordinates.Direction) coordinates.Direction {
@@ -97,7 +97,7 @@ func turn(d coordinates.Direction) coordinates.Direction {
 	return dirs[(idx + 1) % len(dirs)]
 }
 
-func walk(m matrix.Matrix[rune], c coordinates.Coordinate) (map[coordinates.Coordinate]bool, error) {
+func walk(m grid.Grid[rune], c coordinates.Coordinate) (map[coordinates.Coordinate]bool, error) {
 	d := coordinates.NORTH
 
 	visited := make(map[coordinates.Coordinate]bool)

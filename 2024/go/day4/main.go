@@ -2,7 +2,7 @@ package main
 
 import (
 	"advent-of-code/2024/go/coordinates"
-	"advent-of-code/2024/go/matrix"
+	"advent-of-code/2024/go/grid"
 	_ "embed"
 	"errors"
 	"log"
@@ -35,22 +35,22 @@ func part1() (int, error) {
 	height := len(lines)
 	width := len(lines[0])
 
-	matrix, err := matrix.New[rune](height, width)
+	grid, err := grid.New[rune](height, width)
 	if err != nil {
-		return 0, errors.New("Invalid matrix")
+		return 0, errors.New("Invalid grid")
 	}
 
 	for i, line := range lines {
 		for j, char := range line {
-			matrix.Set(coordinates.New(i, j), char)
+			grid.Set(coordinates.New(i, j), char)
 		}
 	}
 
 	total := 0
-	for row := range matrix.Height {
-		for col := range matrix.Width {
+	for row := range grid.Height {
+		for col := range grid.Width {
 			c := coordinates.New(row, col)
-			l1, _ := matrix.Get(c)
+			l1, _ := grid.Get(c)
 
 			if l1 != 'X' {
 				continue
@@ -58,19 +58,19 @@ func part1() (int, error) {
 
 			for _, dir := range coordinates.AllDirections() {
 				c2 := coordinates.Position(c, dir)
-				l2, err := matrix.Get(c2)
+				l2, err := grid.Get(c2)
 				if err != nil || l2 != 'M' {
 					continue;
 				}
 
 				c2 = coordinates.Position(c2, dir)
-				l3, err := matrix.Get(c2)
+				l3, err := grid.Get(c2)
 				if err != nil || l3 != 'A' {
 					continue;
 				}
 
 				c2 = coordinates.Position(c2, dir)
-				l4, err := matrix.Get(c2)
+				l4, err := grid.Get(c2)
 				if err != nil || l4 != 'S' {
 					continue;
 				}
@@ -89,47 +89,47 @@ func part2() (int, error) {
 	height := len(lines)
 	width := len(lines[0])
 
-	matrix, err := matrix.New[rune](height, width)
+	grid, err := grid.New[rune](height, width)
 	if err != nil {
-		return 0, errors.New("Invalid matrix")
+		return 0, errors.New("Invalid grid")
 	}
 
 	for i, line := range lines {
 		for j, char := range line {
-			matrix.Set(coordinates.New(i, j), char)
+			grid.Set(coordinates.New(i, j), char)
 		}
 	}
 
 	total := 0
-	for row := range matrix.Height {
-		for col := range matrix.Width {
+	for row := range grid.Height {
+		for col := range grid.Width {
 			c := coordinates.New(row, col)
-			l, _ := matrix.Get(c)
+			l, _ := grid.Get(c)
 
 			if l != 'A' {
 				continue
 			}
 
 			cd := coordinates.Position(c, coordinates.NORTHWEST)
-			nw, err := matrix.Get(cd)
+			nw, err := grid.Get(cd)
 			if err != nil || (nw != 'M' && nw != 'S') {
 				continue;
 			}
 
 			cd = coordinates.Position(c, coordinates.NORTHEAST)
-			ne, err := matrix.Get(cd)
+			ne, err := grid.Get(cd)
 			if err != nil || (ne != 'M' && ne != 'S') {
 				continue;
 			}
 
 			cd = coordinates.Position(c, coordinates.SOUTHEAST)
-			se, err := matrix.Get(cd)
+			se, err := grid.Get(cd)
 			if err != nil || ((nw == 'M' && se != 'S') || (nw == 'S' && se != 'M')) {
 				continue
 			}
 
 			cd = coordinates.Position(c, coordinates.SOUTHWEST)
-			sw, err := matrix.Get(cd)
+			sw, err := grid.Get(cd)
 			if err != nil || (ne == 'M' && sw != 'S') || (ne == 'S' && sw != 'M') {
 				continue
 			}
