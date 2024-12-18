@@ -49,28 +49,28 @@ func WithValues[T comparable](values [][]T) Option[T] {
     }
 }
 
-func (m *Grid[T]) Get(c coordinates.Coordinate) (T, error) {
+func (g *Grid[T]) Get(c coordinates.Coordinate) (T, error) {
 	var null T
 
-	if m.outOfBounds(c) {
+	if g.outOfBounds(c) {
 		return null, fmt.Errorf("Index out of bounds: row %d, column %d", c.Y, c.X)
 	}
 
-	return m.data[c.Y][c.X], nil
+	return g.data[c.Y][c.X], nil
 }
 
-func (m *Grid[T]) Set(c coordinates.Coordinate, value T) error {
-	if m.outOfBounds(c) {
+func (g *Grid[T]) Set(c coordinates.Coordinate, value T) error {
+	if g.outOfBounds(c) {
 		return fmt.Errorf("Index out of bounds: row %d, column %d", c.Y, c.X)
 	}
 
-	m.data[c.Y][c.X] = value
+	g.data[c.Y][c.X] = value
 
 	return nil
 }
 
-func (m *Grid[T]) Find(value T) coordinates.Coordinate {
-	for i, row := range m.data {
+func (g *Grid[T]) Find(value T) coordinates.Coordinate {
+	for i, row := range g.data {
 		for j, val := range row {
 			if val == value {
 				return coordinates.New(i, j)
@@ -81,14 +81,14 @@ func (m *Grid[T]) Find(value T) coordinates.Coordinate {
 	return coordinates.New(-1, -1)
 }
 
-func (m *Grid[T]) IsEdge(c coordinates.Coordinate) bool  {
-	return c.Y == 0 || c.Y == m.Height - 1 || c.X == 0 || c.X == m.Width - 1
+func (g *Grid[T]) IsEdge(c coordinates.Coordinate) bool  {
+	return c.Y == 0 || c.Y == g.Height - 1 || c.X == 0 || c.X == g.Width - 1
 }
 
-func (m *Grid[T]) outOfBounds(c coordinates.Coordinate) bool {
-	return c.Y < 0 || c.Y >= m.Height || c.X < 0 || c.X >= m.Width
+func (g *Grid[T]) outOfBounds(c coordinates.Coordinate) bool {
+	return c.Y < 0 || c.Y >= g.Height || c.X < 0 || c.X >= g.Width
 }
 
-func (m *Grid[T]) InBounds(c coordinates.Coordinate) bool {
-	return !m.outOfBounds(c)
+func (g *Grid[T]) InBounds(c coordinates.Coordinate) bool {
+	return !g.outOfBounds(c)
 }
