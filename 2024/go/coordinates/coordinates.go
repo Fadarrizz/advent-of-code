@@ -15,6 +15,66 @@ func Position(c Coordinate, d Direction) Coordinate {
 	return Coordinate{c.X + a, c.Y + b}
 }
 
+func (c *Coordinate) Direction(other *Coordinate) Direction {
+	if (c.Y - other.Y < 0) && (c.X - other.X == 0)  {
+		return NORTH
+	}
+
+	if (c.Y - other.Y > 0) && (c.X - other.X == 0)  {
+		return SOUTH
+	}
+
+	if (c.X - other.X < 0) && (c.Y - other.Y == 0)  {
+		return WEST
+	}
+
+	if (c.X - other.X > 0) && (c.Y - other.Y == 0)  {
+		return EAST
+	}
+
+	return NONE
+}
+
+func (c *Coordinate) Edge(other *Coordinate) Edge {
+	return Edge{
+		X: float32(c.X + other.X) / 2,
+		Y: float32(c.Y + other.Y) / 2,
+	}
+}
+
+func (c *Coordinate) Corners() []Corner {
+	fx := float32(c.X)
+	fy := float32(c.Y)
+
+	return []Corner{
+		{X: fx - 0.5, Y: fy - 0.5 }, // NW
+		{X: fx + 0.5, Y: fy - 0.5 }, // NE
+		{X: fx + 0.5, Y: fy + 0.5 }, // SE
+		{X: fx - 0.5, Y: fy + 0.5 }, // SW
+	}
+}
+
+// either one has half value, e.g. (1.0, 0.5)
+type Edge struct {
+	X float32
+	Y float32
+}
+
+// always has half values, e.g. (0.5, 1.5)
+type Corner struct {
+	X float32
+	Y float32
+}
+
+func (c *Corner) SurroundingSquares() []Coordinate {
+	return []Coordinate{
+		{X: int(c.X - 0.5), Y: int(c.Y - 0.5) }, // NW
+		{X: int(c.X + 0.5), Y: int(c.Y - 0.5) }, // NE
+		{X: int(c.X + 0.5), Y: int(c.Y + 0.5) }, // SE
+		{X: int(c.X - 0.5), Y: int(c.Y + 0.5) }, // SW
+	}
+}
+
 type Line struct {
 	A Coordinate
 	B Coordinate
@@ -47,6 +107,7 @@ func (l Line) Extend(length Coordinate) Line {
 type Direction int
 
 const (
+	NONE = -1
 	NORTH Direction = iota
 	NORTHEAST
 	EAST
@@ -100,6 +161,15 @@ func adjustmentsFromDirection(d Direction) (int, int) {
 		return -1, -1
 	default:
 		return 0, 0 // should not be possible
+	}
+}
+
+func Directions() []Direction {
+	return []Direction{
+		NORTH,
+		EAST,
+		SOUTH,
+		WEST,
 	}
 }
 
